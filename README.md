@@ -20,21 +20,23 @@ pip install -r requirements.txt
 🧠 Usage
 
 ```bash
-import torch
+import torch  # type: ignore
 from model import ECAPA_gender
 
-# Load the pretrained model from Hugging Face
-model = ECAPA_gender.from_pretrained("JaesungHuh/voice-gender-classifier")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Manually load the model from a .pth file
+model = ECAPA_gender()
+model.load_state_dict(torch.load('./weights/gender_classifier.model', map_location=device))
+
+model.to(device)
 model.eval()
 
-# Setup device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
-
-# Predict gender from an audio file
-audio_path = "data/00001.wav"
+# Predict
+example_file = "data/00003.wav"
 with torch.no_grad():
-    prediction = model.predict(audio_path, device=device)
-    print("Predicted Gender:", prediction)
+    output = model.predict(example_file, device=device)
+    print("Gender : ", output)
+
 
 ```
